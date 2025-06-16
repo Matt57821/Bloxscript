@@ -47,7 +47,7 @@ local autoRespawnConn = nil
 local Window = OrionLib:MakeWindow({Name = "Bloxscript", HidePremium = false, SaveConfig = true, ConfigFolder = "Bloxscript"})
 
 local MainTab = Window:MakeTab({Name = "Main", Icon = "rbxassetid://4483345998"})
-local CombatTab = Window:MakeTab({Name = "Combat", Icon = "rbxassetid://4483345998"})
+local FightingTab = Window:MakeTab({Name = "Combat", Icon = "rbxassetid://4483345998"})
 local AutoTab = Window:MakeTab({Name = "Auto", Icon = "rbxassetid://4483345998"})
 local TeleportTab = Window:MakeTab({Name = "Teleport", Icon = "rbxassetid://4483345998"})
 local SettingsTab = Window:MakeTab({Name = "Settings", Icon = "rbxassetid://4483345998"})
