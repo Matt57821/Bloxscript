@@ -1,8 +1,8 @@
--- Bloxscript with Teleport, Aimbot, ESP, Noclip, Speed, Jump, Auto, and more
+-- Bloxscript with Teleport, Aimbot, ESP, Noclip, Speed, Jump, Auto, Settings Tab for GUI theme
 -- Designed for Roblox executors like Krnl
--- Please execute after game fully loads
+-- Load after game fully loads
 
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/orion.lua"))()
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/GRPGaming/Key-System/refs/heads/Xycer-Hub-Script/ZusumeLib(Slider)"))()
 
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -10,7 +10,7 @@ local UserInputService = game:GetService("UserInputService")
 local VirtualUser = game:GetService("VirtualUser")
 
 local Player = Players.LocalPlayer
-local camera = game.Workspace.CurrentCamera
+local camera = workspace.CurrentCamera
 
 -- Variables for features
 local speedhack = false
@@ -43,22 +43,56 @@ local autoJumpConn = nil
 local autoRespawn = false
 local autoRespawnConn = nil
 
--- Create window
-local Window = OrionLib:MakeWindow({Name = "Bloxscript", HidePremium = false, SaveConfig = true, ConfigFolder = "Bloxscript"})
+-- Theme colors (default)
+local themeColors = {
+    Accent = Color3.fromRGB(0, 170, 255),
+    Background = Color3.fromRGB(25, 25, 25),
+    DarkContrast = Color3.fromRGB(20, 20, 20),
+    LightContrast = Color3.fromRGB(35, 35, 35),
+    TextColor = Color3.fromRGB(255, 255, 255)
+}
+
+-- Create window with theme
+local Window = OrionLib:MakeWindow({
+    Name = "Bloxscript",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "Bloxscript",
+    IntroText = "Loaded Bloxscript",
+    Theme = themeColors
+})
 
 local MainTab = Window:MakeTab({Name = "Main", Icon = "rbxassetid://4483345998"})
-local FightingTab = Window:MakeTab({Name = "Combat", Icon = "rbxassetid://4483345998"})
+local FightingTab = Window:MakeTab({Name = "Fighting", Icon = "rbxassetid://4483345998"})
 local AutoTab = Window:MakeTab({Name = "Auto", Icon = "rbxassetid://4483345998"})
-local TeleportTab = Window:MakeTab({Name = "Teleport", Icon = "rbxassetid://4483345998"})
 local SettingsTab = Window:MakeTab({Name = "Settings", Icon = "rbxassetid://4483345998"})
 
--- Main tab controls
+-- Helper to get player names for dropdown
+local function getPlayerNames()
+    local names = {}
+    for _, plr in pairs(Players:GetPlayers()) do
+        table.insert(names, plr.Name)
+    end
+    return names
+end
 
-MainTab:AddToggle({ 
-    Name = "Speed Hack", 
-    Default = false, 
-    Save = true, 
-    Flag = "speedhack_toggle", 
+-- Teleport function
+local function teleportToPlayer(name)
+    local targetPlayer = Players:FindFirstChild(name)
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = targetPlayer.Character.HumanoidRootPart
+        if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+            Player.Character.HumanoidRootPart.CFrame = hrp.CFrame + Vector3.new(0, 3, 0)
+        end
+    end
+end
+
+-- Main Tab: Speed Hack toggle and slider
+MainTab:AddToggle({
+    Name = "Speed Hack",
+    Default = false,
+    Save = true,
+    Flag = "speedhack_toggle",
     Callback = function(Value)
         speedhack = Value
         if speedhack then
@@ -76,15 +110,15 @@ MainTab:AddToggle({
     end
 })
 
-MainTab:AddSlider({ 
-    Name = "Speed Slider", 
-    Min = 16, 
-    Max = 500, 
-    Default = 16, 
-    Color = Color3.fromRGB(85, 170, 255), 
-    Increment = 1, 
-    Save = true, 
-    Flag = "speedhack_slider", 
+MainTab:AddSlider({
+    Name = "Speed Slider",
+    Min = 16,
+    Max = 500,
+    Default = 16,
+    Color = themeColors.Accent,
+    Increment = 1,
+    Save = true,
+    Flag = "speedhack_slider",
     Callback = function(Value)
         speed = Value
         if speedhack and Player.Character and Player.Character:FindFirstChild("Humanoid") then
@@ -93,11 +127,12 @@ MainTab:AddSlider({
     end
 })
 
-MainTab:AddToggle({ 
-    Name = "Jump Power Hack", 
-    Default = false, 
-    Save = true, 
-    Flag = "jumphack_toggle", 
+-- Jump Power Hack toggle and slider
+MainTab:AddToggle({
+    Name = "Jump Power Hack",
+    Default = false,
+    Save = true,
+    Flag = "jumphack_toggle",
     Callback = function(Value)
         jumpHack = Value
         if jumpHack then
@@ -115,15 +150,15 @@ MainTab:AddToggle({
     end
 })
 
-MainTab:AddSlider({ 
-    Name = "Jump Power Slider", 
-    Min = 50, 
-    Max = 500, 
-    Default = 50, 
-    Color = Color3.fromRGB(85, 170, 255), 
-    Increment = 5, 
-    Save = true, 
-    Flag = "jumphack_slider", 
+MainTab:AddSlider({
+    Name = "Jump Power Slider",
+    Min = 50,
+    Max = 500,
+    Default = 50,
+    Color = themeColors.Accent,
+    Increment = 5,
+    Save = true,
+    Flag = "jumphack_slider",
     Callback = function(Value)
         jumpPower = Value
         if jumpHack and Player.Character and Player.Character:FindFirstChild("Humanoid") then
@@ -132,11 +167,12 @@ MainTab:AddSlider({
     end
 })
 
-MainTab:AddToggle({ 
-    Name = "Infinite Jump", 
-    Default = false, 
-    Save = true, 
-    Flag = "infiniteJump_toggle", 
+-- Infinite Jump toggle
+MainTab:AddToggle({
+    Name = "Infinite Jump",
+    Default = false,
+    Save = true,
+    Flag = "infiniteJump_toggle",
     Callback = function(Value)
         infiniteJump = Value
     end
@@ -148,24 +184,116 @@ UserInputService.JumpRequest:Connect(function()
     end
 end)
 
--- Combat (Fighting) tab controls
+-- Noclip toggle
+MainTab:AddToggle({
+    Name = "Noclip",
+    Default = false,
+    Save = true,
+    Flag = "noclip_toggle",
+    Callback = function(Value)
+        noclip = Value
+        if noclip then
+            noclipConn = RunService.Stepped:Connect(function()
+                if Player.Character then
+                    for _, part in pairs(Player.Character:GetChildren()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        else
+            if noclipConn then noclipConn:Disconnect() noclipConn = nil end
+            if Player.Character then
+                for _, part in pairs(Player.Character:GetChildren()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = true
+                    end
+                end
+            end
+        end
+    end
+})
 
-FightingTab:AddToggle({ 
-    Name = "Aimbot", 
-    Default = false, 
-    Save = true, 
-    Flag = "aimbot_toggle", 
+-- Infinite Health toggle
+MainTab:AddToggle({
+    Name = "Infinite Health",
+    Default = false,
+    Save = true,
+    Flag = "infinite_health_toggle",
+    Callback = function(Value)
+        infiniteHealth = Value
+        if infiniteHealth then
+            healthConn = RunService.RenderStepped:Connect(function()
+                if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+                    Player.Character.Humanoid.Health = Player.Character.Humanoid.MaxHealth
+                end
+            end)
+        else
+            if healthConn then healthConn:Disconnect() healthConn = nil end
+        end
+    end
+})
+
+-- Anti-AFK toggle
+MainTab:AddToggle({
+    Name = "Anti-AFK",
+    Default = false,
+    Save = true,
+    Flag = "anti_afk_toggle",
+    Callback = function(Value)
+        if Value then
+            Player.Idled:Connect(function()
+                VirtualUser:CaptureController()
+                VirtualUser:ClickButton2(Vector2.new())
+            end)
+        end
+    end
+})
+
+-- Teleport Dropdown with player names
+local teleportTarget = nil
+MainTab:AddDropdown({
+    Name = "Teleport to Player",
+    Default = nil,
+    Save = false,
+    Options = getPlayerNames(),
+    Flag = "teleport_dropdown",
+    Callback = function(Value)
+        teleportTarget = Value
+        teleportToPlayer(teleportTarget)
+    end
+})
+
+-- Update teleport dropdown when players join or leave
+Players.PlayerAdded:Connect(function()
+    local options = getPlayerNames()
+    Window.Flags["teleport_dropdown"]:UpdateOptions(options)
+end)
+
+Players.PlayerRemoving:Connect(function()
+    local options = getPlayerNames()
+    Window.Flags["teleport_dropdown"]:UpdateOptions(options)
+end)
+
+-- Fighting Tab --
+
+FightingTab:AddToggle({
+    Name = "Aimbot",
+    Default = false,
+    Save = true,
+    Flag = "aimbot_toggle",
     Callback = function(Value)
         aimbot = Value
     end
 })
 
-FightingTab:AddDropdown({ 
-    Name = "Aimbot Target Part", 
-    Default = "Head", 
-    Save = true, 
-    Flag = "aimbot_part", 
-    Options = {"Head", "HumanoidRootPart", "UpperTorso", "LowerTorso"}, 
+FightingTab:AddDropdown({
+    Name = "Aimbot Target Part",
+    Default = "Head",
+    Save = true,
+    Flag = "aimbot_part",
+    Options = {"Head", "HumanoidRootPart", "UpperTorso", "LowerTorso"},
     Callback = function(Value)
         aimPart = Value
     end
@@ -197,12 +325,11 @@ local aimConn = RunService.RenderStepped:Connect(function()
     end
 end)
 
-
-FightingTab:AddToggle({ 
-    Name = "ESP", 
-    Default = false, 
-    Save = true, 
-    Flag = "esp_toggle", 
+FightingTab:AddToggle({
+    Name = "ESP",
+    Default = false,
+    Save = true,
+    Flag = "esp_toggle",
     Callback = function(Value)
         espEnabled = Value
         if espEnabled then
@@ -240,13 +367,13 @@ FightingTab:AddToggle({
     end
 })
 
--- Auto tab controls
+-- Auto Tab --
 
-AutoTab:AddToggle({ 
-    Name = "Auto Walk", 
-    Default = false, 
-    Save = true, 
-    Flag = "auto_walk_toggle", 
+AutoTab:AddToggle({
+    Name = "Auto Walk",
+    Default = false,
+    Save = true,
+    Flag = "auto_walk_toggle",
     Callback = function(Value)
         autoWalk = Value
         if autoWalk then
@@ -262,11 +389,11 @@ AutoTab:AddToggle({
     end
 })
 
-AutoTab:AddToggle({ 
-    Name = "Auto Jump", 
-    Default = false, 
-    Save = true, 
-    Flag = "auto_jump_toggle", 
+AutoTab:AddToggle({
+    Name = "Auto Jump",
+    Default = false,
+    Save = true,
+    Flag = "auto_jump_toggle",
     Callback = function(Value)
         autoJump = Value
         if autoJump then
@@ -285,11 +412,11 @@ AutoTab:AddToggle({
     end
 })
 
-AutoTab:AddToggle({ 
-    Name = "Auto Respawn (Auto Dies)", 
-    Default = false, 
-    Save = true, 
-    Flag = "auto_respawn_toggle", 
+AutoTab:AddToggle({
+    Name = "Auto Respawn (Auto Dies)",
+    Default = false,
+    Save = true,
+    Flag = "auto_respawn_toggle",
     Callback = function(Value)
         autoRespawn = Value
         if autoRespawn then
@@ -304,66 +431,7 @@ AutoTab:AddToggle({
     end
 })
 
--- Teleport tab controls
-
-local playerList = {}
-for _, plr in pairs(Players:GetPlayers()) do
-    table.insert(playerList, plr.Name)
-end
-
-local selectedPlayer = nil
-
-TeleportTab:AddDropdown({ 
-    Name = "Select Player", 
-    Default = playerList[1] or "None", 
-    Options = playerList, 
-    Flag = "teleport_player_dropdown", 
-    Callback = function(Value)
-        selectedPlayer = Value
-    end
-})
-
-TeleportTab:AddButton({ 
-    Name = "Teleport To Player", 
-    Callback = function()
-        if selectedPlayer then
-            local targetPlayer = Players:FindFirstChild(selectedPlayer)
-            if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-                Player.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
-            else
-                print("Player or character not found.")
-            end
-        else
-            print("No player selected.")
-        end
-    end
-})
-
--- Update the player list when someone joins or leaves
-Players.PlayerAdded:Connect(function(plr)
-    table.insert(playerList, plr.Name)
-    TeleportTab:RefreshDropdown("teleport_player_dropdown", playerList)
-end)
-
-Players.PlayerRemoving:Connect(function(plr)
-    for i, name in ipairs(playerList) do
-        if name == plr.Name then
-            table.remove(playerList, i)
-            break
-        end
-    end
-    TeleportTab:RefreshDropdown("teleport_player_dropdown", playerList)
-end)
-
 -- Settings Tab: GUI Theme Customization --
-
-local themeColors = {
-    Accent = Color3.fromRGB(0, 170, 255),
-    Background = Color3.fromRGB(25, 25, 25),
-    DarkContrast = Color3.fromRGB(20, 20, 20),
-    LightContrast = Color3.fromRGB(35, 35, 35),
-    TextColor = Color3.fromRGB(255, 255, 255),
-}
 
 SettingsTab:AddColorPicker({
     Name = "Accent Color",
@@ -371,7 +439,7 @@ SettingsTab:AddColorPicker({
     Flag = "accent_color",
     Callback = function(Color)
         themeColors.Accent = Color
-        Window:SetTheme(themeColors)
+        Window:UpdateTheme(themeColors)
     end
 })
 
@@ -381,7 +449,7 @@ SettingsTab:AddColorPicker({
     Flag = "background_color",
     Callback = function(Color)
         themeColors.Background = Color
-        Window:SetTheme(themeColors)
+        Window:UpdateTheme(themeColors)
     end
 })
 
@@ -391,7 +459,7 @@ SettingsTab:AddColorPicker({
     Flag = "dark_contrast_color",
     Callback = function(Color)
         themeColors.DarkContrast = Color
-        Window:SetTheme(themeColors)
+        Window:UpdateTheme(themeColors)
     end
 })
 
@@ -401,7 +469,7 @@ SettingsTab:AddColorPicker({
     Flag = "light_contrast_color",
     Callback = function(Color)
         themeColors.LightContrast = Color
-        Window:SetTheme(themeColors)
+        Window:UpdateTheme(themeColors)
     end
 })
 
@@ -411,7 +479,7 @@ SettingsTab:AddColorPicker({
     Flag = "text_color",
     Callback = function(Color)
         themeColors.TextColor = Color
-        Window:SetTheme(themeColors)
+        Window:UpdateTheme(themeColors)
     end
 })
 
