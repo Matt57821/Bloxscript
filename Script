@@ -1,5 +1,4 @@
 -- Bloxscript with Teleport, Aimbot, ESP, Noclip, Speed, Jump, Auto, Settings Tab for GUI theme
--- Designed for Roblox executors like Krnl
 -- Load after game fully loads
 
 local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/jensonhirst/Orion/main/source"))()
