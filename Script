@@ -2,7 +2,7 @@
 -- Designed for Roblox executors like Krnl
 -- Load after game fully loads
 
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/GRPGaming/Key-System/refs/heads/Xycer-Hub-Script/ZusumeLib(Slider)"))()
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/jensonhirst/Orion/main/source"))()
 
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
