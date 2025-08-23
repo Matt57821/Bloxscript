@@ -1,0 +1,253 @@
+-- Load Orion Library
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
+
+-- Create Main Window
+local Window = OrionLib:MakeWindow({
+    Name = "Admin Panel",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "APConfigs"
+})
+
+------------------------------------------------
+-- MAIN TAB
+------------------------------------------------
+local MainTab = Window:MakeTab({
+    Name = "Main",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Variables
+local speed = 16
+local jump = 50
+local infiniteJump = false
+local noclip = false
+local infiniteHealth = false
+local antiAFK = false
+
+-- Speed Slider
+MainTab:AddSlider({
+    Name = "Speed",
+    Min = 16,
+    Max = 200,
+    Default = 16,
+    Color = Color3.fromRGB(255, 255, 255),
+    Increment = 1,
+    ValueName = "WalkSpeed",
+    Callback = function(Value)
+        speed = Value
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
+    end
+})
+
+-- Speed Toggle
+MainTab:AddToggle({
+    Name = "Speed On/Off",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
+        else
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        end
+    end
+})
+
+-- Jump Power Slider
+MainTab:AddSlider({
+    Name = "Jump Power",
+    Min = 50,
+    Max = 300,
+    Default = 50,
+    Color = Color3.fromRGB(255, 255, 255),
+    Increment = 5,
+    ValueName = "Power",
+    Callback = function(Value)
+        jump = Value
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = jump
+    end
+})
+
+-- Jump Power Toggle
+MainTab:AddToggle({
+    Name = "Jump Power On/Off",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = jump
+        else
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
+        end
+    end
+})
+
+-- Infinite Jump Toggle
+MainTab:AddToggle({
+    Name = "Infinite Jump",
+    Default = false,
+    Callback = function(Value)
+        infiniteJump = Value
+    end
+})
+
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if infiniteJump then
+        game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+    end
+end)
+
+-- Noclip Toggle
+MainTab:AddToggle({
+    Name = "Noclip",
+    Default = false,
+    Callback = function(Value)
+        noclip = Value
+    end
+})
+
+game:GetService("RunService").Stepped:Connect(function()
+    if noclip then
+        for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+-- Infinite Health Toggle
+MainTab:AddToggle({
+    Name = "Infinite Health",
+    Default = false,
+    Callback = function(Value)
+        infiniteHealth = Value
+    end
+})
+
+game:GetService("RunService").Heartbeat:Connect(function()
+    if infiniteHealth and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+        game.Players.LocalPlayer.Character.Humanoid.Health = game.Players.LocalPlayer.Character.Humanoid.MaxHealth
+    end
+end)
+
+-- Anti-AFK Toggle
+MainTab:AddToggle({
+    Name = "Anti-AFK",
+    Default = false,
+    Callback = function(Value)
+        antiAFK = Value
+    end
+})
+
+if antiAFK then
+    local vu = game:GetService("VirtualUser")
+    game:GetService("Players").LocalPlayer.Idled:Connect(function()
+        vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+        wait(1)
+        vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+    end)
+end
+
+------------------------------------------------
+-- TELEPORT TAB
+------------------------------------------------
+local TeleportTab = Window:MakeTab({
+    Name = "Teleport",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local players = {}
+for _, player in ipairs(game.Players:GetPlayers()) do
+    table.insert(players, player.Name)
+end
+
+local selectedPlayer = players[1]
+local dropdown = TeleportTab:AddDropdown({
+    Name = "Choose Player",
+    Default = selectedPlayer,
+    Options = players,
+    Callback = function(Value)
+        selectedPlayer = Value
+    end
+})
+
+game.Players.PlayerAdded:Connect(function()
+    local names = {}
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        table.insert(names, player.Name)
+    end
+    dropdown:Refresh(names, true)
+end)
+
+game.Players.PlayerRemoving:Connect(function()
+    local names = {}
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        table.insert(names, player.Name)
+    end
+    dropdown:Refresh(names, true)
+end)
+
+TeleportTab:AddToggle({
+    Name = "Teleport to Player",
+    Default = false,
+    Callback = function(Value)
+        if Value and selectedPlayer then
+            game.Players.LocalPlayer.Character:MoveTo(game.Players[selectedPlayer].Character.HumanoidRootPart.Position)
+        end
+    end
+})
+
+------------------------------------------------
+-- FIGHTING TAB
+------------------------------------------------
+local FightingTab = Window:MakeTab({
+    Name = "Fighting",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local aimbotEnabled = false
+local espEnabled = false
+local targetPart = "Head"
+local espColor = Color3.fromRGB(255, 0, 0)
+
+FightingTab:AddToggle({
+    Name = "Aimbot",
+    Default = false,
+    Callback = function(Value)
+        aimbotEnabled = Value
+    end
+})
+
+FightingTab:AddDropdown({
+    Name = "Aimbot Target Part",
+    Default = "Head",
+    Options = {"Head", "Torso", "HumanoidRootPart"},
+    Callback = function(Value)
+        targetPart = Value
+    end
+})
+
+FightingTab:AddToggle({
+    Name = "ESP",
+    Default = false,
+    Callback = function(Value)
+        espEnabled = Value
+    end
+})
+
+FightingTab:AddColorpicker({
+    Name = "ESP Color",
+    Default = espColor,
+    Callback = function(Value)
+        espColor = Value
+    end
+})
+
+------------------------------------------------
+-- INITIALIZE ORION
+------------------------------------------------
+OrionLib:Init()
+print("admin panel loaded")
