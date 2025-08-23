@@ -14,7 +14,7 @@ local Window = OrionLib:MakeWindow({
 ------------------------------------------------
 local MainTab = Window:MakeTab({
     Name = "Main",
-    Icon = "rbxassetid://4483345998",
+    Icon = "rbxassetid://87786459233147",
     PremiumOnly = false
 })
 
@@ -154,7 +154,7 @@ end
 ------------------------------------------------
 local TeleportTab = Window:MakeTab({
     Name = "Teleport",
-    Icon = "rbxassetid://4483345998",
+    Icon = "rbxassetid://109534038612948",
     PremiumOnly = false
 })
 
@@ -204,7 +204,7 @@ TeleportTab:AddToggle({
 ------------------------------------------------
 local FightingTab = Window:MakeTab({
     Name = "Fighting",
-    Icon = "rbxassetid://4483345998",
+    Icon = "rbxassetid://126915993773490",
     PremiumOnly = false
 })
 
